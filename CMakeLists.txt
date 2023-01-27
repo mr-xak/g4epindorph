@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-project(neutronEpi)
+project(g4epindorph)
 
 FIND_PACKAGE( Boost 1.61 REQUIRED)
 
@@ -22,8 +22,8 @@ endif()
 target_compile_features(NPParamReader PRIVATE cxx_std_17)
 target_link_libraries(NPParamReader PUBLIC  ${Geant4_LIBRARIES} )
 
-add_executable(neutronEpi neutronEpi.cc  ${sources} ${headers})
-target_link_libraries(neutronEpi PUBLIC
+add_executable(g4epindorph neutronEpi.cc  ${sources} ${headers})
+target_link_libraries(g4epindorph PUBLIC
  ${Geant4_LIBRARIES} 
  NPParamReader
 )
