@@ -3,7 +3,7 @@ project(neutronEpi)
 
 FIND_PACKAGE( Boost 1.61 REQUIRED)
 
-find_package(Geant4 REQUIRED vis_all ui_all)
+find_package(Geant4 REQUIRED ui_all)
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/include 
   ${Geant4_INCLUDE_DIR}  

@@ -29,14 +29,11 @@ public:
   G4Run* GenerateRun();
   virtual void BeginOfRunAction(const G4Run* run);
   virtual void   EndOfRunAction(const G4Run* run);
-
-  void createAnalysisData();
 private:
   Run* fRun;
 
   clock_t beginRAAt;
   clock_t endRAAt;
-  void analysisCreateVrf4Layer(G4int);
 };
 
 #endif

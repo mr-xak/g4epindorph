@@ -94,13 +94,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
   G4RotationMatrix* rot1 = new G4RotationMatrix();
-  rot1->rotateX(-90*deg);
+  rot1->rotateX(90*deg);
+
+  G4ThreeVector epiPos = cmdParam->getPriorityParamAsG4ThreeVector("epindorphPosition");
 
   G4Tubs* tube1 = new G4Tubs("outterShell1", 0.0, 0.5 * 16.5 * mm, 0.5 * 30 * mm, 360 * deg, 360 * deg);
   G4Cons* cons1 = new G4Cons("outterShell2", 0.0, 0.5 * 16.5 * mm, 0.0, 0.5 * 4 * mm, 0.5 * 21 * mm, 360 * deg, 360 * deg);
   G4UnionSolid *tc1 = new G4UnionSolid("outterShellJoined", tube1, cons1, new G4RotationMatrix(), G4ThreeVector(0, 0, 0.5 * (30 + 21) * mm));
   G4LogicalVolume* tube1LV = new G4LogicalVolume(tc1, nistMan->FindOrBuildMaterial("G4_POLYSTYRENE"), "outterShell1LV");
-  new G4PVPlacement(rot1, G4ThreeVector(0, 0, 0), tube1LV, "outterShell1PV", worldBoxLV, false, 0, true);
+  new G4PVPlacement(rot1, epiPos, tube1LV, "outterShell1PV", worldBoxLV, false, 0, true);
 
 
   G4Tubs* tube2 = new G4Tubs("innerShell1", 0.0, 0.5 * 14.3 * mm, 0.5 * 30 * mm, 360 * deg, 360 * deg);
@@ -115,10 +117,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   sensLV = tube2LV;
 
-  G4Box* moder1 = new G4Box("moder1", 0.5 * 15 * cm, 0.5 * 15 * cm, 0.5 * 2 * mm);
-  G4LogicalVolume *moder1LV = new G4LogicalVolume(moder1, nistMan->FindOrBuildMaterial("G4_PLEXIGLASS"), "moder1LV");
-  //G4LogicalVolume* moder1LV = new G4LogicalVolume(moder1, nistMan->FindOrBuildMaterial("G4_AIR"), "moder1LV");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, -2*cm), moder1LV, "moder1PV", worldBoxLV, false, 0, true);
+  G4bool useModerator = cmdParam->getPriorityParamAsCppInt("useModerator", "1");
+
+  if (useModerator) {
+    G4ThreeVector moderPos = cmdParam->getPriorityParamAsG4ThreeVector("moderatorPosition");
+    G4Box* moder1 = new G4Box("moder1", 0.5 * 15 * cm, 0.5 * 15 * cm, 0.5 * 2 * mm);
+    G4Material* moderatorMaterial = pMaterial->getMaterialIfDefined("moderatorMaterial", nistMan->FindOrBuildMaterial("G4_PLEXIGLASS"));
+    G4LogicalVolume* moder1LV = new G4LogicalVolume(moder1, moderatorMaterial, "moder1LV");
+    new G4PVPlacement(0, moderPos, moder1LV, "moder1PV", worldBoxLV, false, 0, true);
+  }
 
   G4Region* regEpi = new G4Region("regEpi");
   setCutsForRegionFromCMDString(regEpi);
