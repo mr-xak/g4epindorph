@@ -121,7 +121,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   if (useModerator) {
     G4ThreeVector moderPos = cmdParam->getPriorityParamAsG4ThreeVector("moderatorPosition");
-    G4Box* moder1 = new G4Box("moder1", 0.5 * 15 * cm, 0.5 * 15 * cm, 0.5 * 2 * mm);
+    G4double moderatorThin = cmdParam->getPriorityParamAsG4Double("moderatorThickness", "2");
+    G4Box* moder1 = new G4Box("moder1", 0.5 * 15 * cm, 0.5 * 15 * cm, 0.5 * moderatorThin * mm);
     G4Material* moderatorMaterial = pMaterial->getMaterialIfDefined("moderatorMaterial", nistMan->FindOrBuildMaterial("G4_PLEXIGLASS"));
     G4LogicalVolume* moder1LV = new G4LogicalVolume(moder1, moderatorMaterial, "moder1LV");
     new G4PVPlacement(0, moderPos, moder1LV, "moder1PV", worldBoxLV, false, 0, true);
