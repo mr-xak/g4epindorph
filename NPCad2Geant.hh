@@ -25,13 +25,22 @@
 #include "G4AssemblyVolume.hh"
 #include "G4VFacet.hh"
 
+#ifdef WIN32
+#ifdef NPLIBRARY_BUILD_DLL
+#define NPLIBRARY_API __declspec(dllexport)
+#else
+#define NPLIBRARY_API __declspec(dllimport)
+#endif
+#else
+#define NPLIBRARY_API
+#endif
 
 namespace NPLibrary {
   namespace NPCad2Geant {
     class NPStructureBase {
     }; // NPStructureBase
 
-    class NPSTL2Solid {
+    class NPLIBRARY_API NPSTL2Solid {
     public:
       NPSTL2Solid(G4double _baseScale = 1.0);
       ~NPSTL2Solid();

@@ -7,8 +7,9 @@
 #include "SteppingAction.hh"
 
 #include "NPParamReader.hh"
+#include "NPProtobufPhaseSpace.cc"
 
-ActionInitialization::ActionInitialization(DetectorConstruction* fdet) : G4VUserActionInitialization(), fDetector(fdet)
+ActionInitialization::ActionInitialization(DetectorConstruction* fdet) : G4VUserActionInitialization(), fDetector(fdet), masterRunAction(nullptr)
 {
   //masterRunAction = new RunAction();
 }
@@ -30,8 +31,8 @@ void ActionInitialization::Build() const
     SetUserAction(prim);
   }
   else if ("protobuf" == PGAMode) {
-    //PGAProtobuf* prim = new PGAProtobuf();
-    //SetUserAction(prim);
+    PGAProtobuf* prim = new PGAProtobuf();
+    SetUserAction(prim);
   }
   else {
 

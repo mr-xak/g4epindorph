@@ -4,6 +4,7 @@
 #include "G4VSensitiveDetector.hh"
 #include <map>
 #include <vector>
+#include "NPFastLayersData.hh"
 
 
 class G4Step;

@@ -33,6 +33,8 @@ NPSTL2Solid::NPSTL2Solid(G4double _baseScale) {
   baseScale *= _baseScale;
   baseOffset = G4ThreeVector(0, 0, 0);
 
+  numOfFacets = -1;
+
   volSolid = new G4TessellatedSolid("volSolid");
 }
 

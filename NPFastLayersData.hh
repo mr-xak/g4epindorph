@@ -1,5 +1,5 @@
-#ifndef NPFastLayerData_hh
-#define NPFastLayerData_hh 1
+#ifndef NPFastLayersData_hh
+#define NPFastLayersData_hh 1
 
 #include "G4Types.hh"
 #include "G4String.hh"
@@ -22,8 +22,19 @@
 #include "G4AutoLock.hh"
 #endif
 
+#ifdef WIN32
+#ifdef NPLIBRARY_BUILD_DLL
+#define NPLIBRARY_API __declspec(dllexport)
+#else
+#define NPLIBRARY_API __declspec(dllimport)
+#endif
+#else
+#define NPLIBRARY_API
+#endif
+
 namespace NPLibrary {
   namespace NPFastLayerData {
+
 #ifdef _WIN32
     typedef __int64 myIntType;
 #else
@@ -57,12 +68,12 @@ namespace NPLibrary {
     class NPFastVoxelMain {
     public:
 #ifdef G4MULTITHREADED
-      NPFastVoxelMain(bool isMaster = true);
+      NPFastVoxelMain(bool isMaster);
 #else
       NPFastVoxelMain();
 #endif
       virtual ~NPFastVoxelMain();
-      static NPFastVoxelMain* Instance();
+      static NPLIBRARY_API NPFastVoxelMain* Instance();
 
 #ifdef G4MULTITHREADED
       static NPFastVoxelMain* vxMasterInstance;
@@ -72,21 +83,28 @@ namespace NPLibrary {
 #endif
 
       void Init();
-      void finalize(/*G4bool forced=false*/);
+      void NPLIBRARY_API finalize(/*G4bool forced=false*/);
       void _merge(NPFastScoringMapPointer);
 
-      void dumpDoseDepositWithError(std::string, myIntType);
+      void NPLIBRARY_API dumpDoseDepositWithError(std::string, myIntType);
 
-      void setVoxelData(int, int, int);
+      void NPLIBRARY_API setVoxelData(int, int, int);
+      void NPLIBRARY_API setVoxelData(int, int, int, double);
 
-      myIntType getNumFromXYZCoord(myIntType ix, myIntType iy, myIntType iz);
+      myIntType NPLIBRARY_API getNumFromXYZCoord(myIntType ix, myIntType iy, myIntType iz);
 
-      void addData(myIntType, double);
+      void NPLIBRARY_API addData(myIntType, double);
+
+      double NPLIBRARY_API getData(myIntType);
+      double NPLIBRARY_API getAbsError(myIntType);
+
+      inline void NPLIBRARY_API setCf(double _cf) { cf = _cf; };
 
     private:
       NPFastScoringMapPointer dosemap;
       int _xLim, _yLim, _zLim;
       bool isLimSet;
+      double cf;
     }; // class NPFastVoxelMain
   };
 };

@@ -52,10 +52,14 @@
 
 // NPLibrary
 #include "NPParamReader.hh"
+#include "NPFastLayersData.hh"
 
 // App
 #include "DetectorMaterials.hh"
 #include "DetectorSD.hh"
+
+using namespace NPLibrary;
+using namespace NPLibrary::NPFastLayerData;
 
 
 #include <map>
@@ -143,6 +147,9 @@ void DetectorConstruction::ConstructSDandField()
 {
 
   G4cout << "ConstructSDandField called" << G4endl;
+
+  auto* vxFastData = NPLibrary::NPFastLayerData::NPFastVoxelMain::Instance();
+  vxFastData->setVoxelData(1, 1, 1, (1 * MeV / sensLV->GetMass()) / CLHEP::gray);
 
   G4SDManager* sdMan = G4SDManager::GetSDMpointer();
   NPLibrary::NPParamReaderMain* cmdParam = NPLibrary::NPParamReaderMain::Instance();

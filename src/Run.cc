@@ -8,6 +8,7 @@
 #include "G4VPrimitiveScorer.hh"
 #include "G4Threading.hh"
 #include "G4AutoLock.hh"
+#include "NPFastLayersData.hh"
 
 typedef std::map<G4int, G4double> tgD;
 
@@ -108,6 +109,9 @@ void Run::Merge(const G4Run* aRun) {
 
   lMut.unlock();
 
+  NPLibrary::NPFastLayerData::NPFastVoxelMain* vxFastData = NPLibrary::NPFastLayerData::NPFastVoxelMain::Instance();
+  vxFastData->finalize();
+
   G4Run::Merge(aRun);
 }
 
@@ -125,5 +129,10 @@ void Run::EndOfRun() {
   G4cout << "AvgLet " << (let2Avg / qu) / (keV / um) << " keV/um" << G4endl;
   G4cout << "LETt (var): " << (eneSum / dxSum) / (keV / um) << " keV/um" << G4endl;
   G4cout << "N: " << qu << G4endl;
+
+  G4cout << "Dose: ";
+  NPLibrary::NPFastLayerData::NPFastVoxelMain* vxFastData = NPLibrary::NPFastLayerData::NPFastVoxelMain::Instance();
+  G4cout << vxFastData->getData(0) << " Gy " ;
+  G4cout << "Error: " << vxFastData->getAbsError(0) << G4endl;
 }
 

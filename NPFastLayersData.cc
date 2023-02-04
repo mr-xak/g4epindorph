@@ -12,6 +12,7 @@
 #include <inttypes.h>
 #endif
 
+using namespace NPLibrary;
 using namespace NPLibrary::NPFastLayerData;
 
 
@@ -20,8 +21,8 @@ namespace {
   G4Mutex vxMainMergeMutex = G4MUTEX_INITIALIZER;
   G4Mutex vxMetaSetMutex = G4MUTEX_INITIALIZER;
 }
-NPFastVoxelMain* NPFastVoxelMain::vxMasterInstance = 0;
-G4ThreadLocal NPFastVoxelMain* NPFastVoxelMain::vxInstance = 0;
+NPFastVoxelMain* NPFastVoxelMain::vxMasterInstance = nullptr;
+G4ThreadLocal NPFastVoxelMain* NPFastVoxelMain::vxInstance = nullptr;
 #else
 NPFastVoxelMain* NPFastVoxelMain::vxInstance = 0;
 #endif
@@ -31,6 +32,7 @@ void NPLibrary::NPFastLayerData::NPFastVoxelMain::Init()
   _xLim = -1;
   _yLim = -1;
   _zLim = -1;
+  cf = 1.0;
 }
 
 void NPLibrary::NPFastLayerData::NPFastVoxelMain::finalize()
@@ -98,6 +100,11 @@ void NPLibrary::NPFastLayerData::NPFastVoxelMain::setVoxelData(int x, int y, int
 #endif
 }
 
+void NPLibrary::NPFastLayerData::NPFastVoxelMain::setVoxelData(int x, int y, int z, double val) {
+  setVoxelData(x, y, z);
+  setCf(val);
+}
+
 myIntType NPLibrary::NPFastLayerData::NPFastVoxelMain::getNumFromXYZCoord(myIntType ix, myIntType iy, myIntType iz)
 {
   return myIntType(ix + (myIntType)_xLim * iy + (myIntType)_xLim * (myIntType)_yLim * iz);
@@ -111,6 +118,23 @@ void NPLibrary::NPFastLayerData::NPFastVoxelMain::addData(myIntType voxNum, doub
   else {
     dosemap.insert(NPFastScoringMapPointerPair(voxNum, new NPFastScoringLayer(ene)));
   }
+}
+
+double NPLibrary::NPFastLayerData::NPFastVoxelMain::getData(myIntType voxNum)
+{
+  if (dosemap.count(voxNum)) {
+    return dosemap.find(voxNum)->second->depEnergy * cf;
+  }
+  return 0.0;
+}
+
+double NPLibrary::NPFastLayerData::NPFastVoxelMain::getAbsError(myIntType voxNum)
+{
+  if (dosemap.count(voxNum)) {
+    auto* pt = dosemap.find(voxNum)->second;
+    return pt->calculateError() * cf;
+  }
+  return 0.0;
 }
 
 #ifdef G4MULTITHREADED
@@ -128,7 +152,7 @@ NPLibrary::NPFastLayerData::NPFastVoxelMain::NPFastVoxelMain() {
 #ifdef G4MULTITHREADED
 NPFastVoxelMain* NPFastVoxelMain::Instance()
 {
-  if (vxInstance == 0) {
+  if (vxInstance == nullptr) {
     G4bool isMaster = !G4Threading::IsWorkerThread();
     //G4bool isMaster = G4Threading::IsMasterThread();
     //if (isMaster) vxMasterInstance = new NPVoxelMain();
