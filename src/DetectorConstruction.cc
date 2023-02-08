@@ -53,6 +53,7 @@
 // NPLibrary
 #include "NPParamReader.hh"
 #include "NPFastLayersData.hh"
+#include "NPCad2Geant.hh"
 
 // App
 #include "DetectorMaterials.hh"
@@ -87,6 +88,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   NPLibrary::NPParamReaderMain* cmdParam = NPLibrary::NPParamReaderMain::Instance();
   G4NistManager* nistMan = G4NistManager::Instance();
   G4Material* Galactic = nistMan->FindOrBuildMaterial("G4_Galactic");
+  G4Material* air = nistMan->FindOrBuildMaterial("G4_AIR");
   G4Material* worldMaterial = pMaterial->getMaterialIfDefined("worldMaterial", Galactic);
   G4double worldXLength = cmdParam->getPriorityParamAsG4Double("WorldXLength", "60") * cm;
   G4double worldYLength = cmdParam->getPriorityParamAsG4Double("WorldYLength", "60") * cm;
@@ -102,11 +104,25 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4ThreeVector epiPos = cmdParam->getPriorityParamAsG4ThreeVector("epindorphPosition");
 
+  G4bool epiInWorld = cmdParam->getPriorityParamAsCppInt("epindorphInWorld", "1");
+
   G4Tubs* tube1 = new G4Tubs("outterShell1", 0.0, 0.5 * 16.5 * mm, 0.5 * 30 * mm, 360 * deg, 360 * deg);
   G4Cons* cons1 = new G4Cons("outterShell2", 0.0, 0.5 * 16.5 * mm, 0.0, 0.5 * 4 * mm, 0.5 * 21 * mm, 360 * deg, 360 * deg);
   G4UnionSolid *tc1 = new G4UnionSolid("outterShellJoined", tube1, cons1, new G4RotationMatrix(), G4ThreeVector(0, 0, 0.5 * (30 + 21) * mm));
   G4LogicalVolume* tube1LV = new G4LogicalVolume(tc1, nistMan->FindOrBuildMaterial("G4_POLYSTYRENE"), "outterShell1LV");
-  new G4PVPlacement(rot1, epiPos, tube1LV, "outterShell1PV", worldBoxLV, false, 0, true);
+
+  if (epiInWorld) {
+    new G4PVPlacement(rot1, epiPos, tube1LV, "outterShell1PV", worldBoxLV, false, 0, true);
+  }
+  else {
+    G4ThreeVector outterEpiBoxSizes = cmdParam->getPriorityParamAsG4ThreeVector("outterEpiBoxSizes", G4ThreeVector(16.5*mm, 16.5*mm, 51*mm));
+    G4ThreeVector outterEpiBoxPosition = cmdParam->getPriorityParamAsG4ThreeVector("outterEpiBoxPosition");
+    G4Box* outterEpiBox = new G4Box("outterEpiBox", 0.5 * outterEpiBoxSizes.x(), 0.5 * outterEpiBoxSizes.y(), 0.5 * outterEpiBoxSizes.z());
+    G4Material* outterEpiBoxMaterial = pMaterial->getMaterialIfDefined("outterEpiBoxMaterial", air);
+    G4LogicalVolume* outterEpiBoxLV = new G4LogicalVolume(outterEpiBox, outterEpiBoxMaterial, "outterEpiBoxLV");
+    new G4PVPlacement(rot1, outterEpiBoxPosition, outterEpiBoxLV, "outterEpiBoxPV", worldBoxLV, false, 0, true);
+    new G4PVPlacement(new G4RotationMatrix(), epiPos, tube1LV, "outterShell1PV", outterEpiBoxLV, false, 0, true);
+  }
 
 
   G4Tubs* tube2 = new G4Tubs("innerShell1", 0.0, 0.5 * 14.3 * mm, 0.5 * 30 * mm, 360 * deg, 360 * deg);
@@ -130,6 +146,25 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4Material* moderatorMaterial = pMaterial->getMaterialIfDefined("moderatorMaterial", nistMan->FindOrBuildMaterial("G4_PLEXIGLASS"));
     G4LogicalVolume* moder1LV = new G4LogicalVolume(moder1, moderatorMaterial, "moder1LV");
     new G4PVPlacement(0, moderPos, moder1LV, "moder1PV", worldBoxLV, false, 0, true);
+  }
+
+  if ((bool)cmdParam->getPriorityParamAsCppInt("useStlObjectBinary", "0")) {
+    G4String stlFilterPath = cmdParam->getPriorityParamAsG4String("stlFilterPath", "filter.stl");
+    G4Material* stlObjectMaterial = pMaterial->getMaterialIfDefined("stlObjectMaterial", G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER"));
+    G4ThreeVector stlFilterPosition = cmdParam->getPriorityParamAsG4ThreeVector("stlFilterPosition", G4ThreeVector());
+    G4RotationMatrix* stlFilterRotation = cmdParam->getPriorityParamAsG4RotationMatrixPointer("stlFilterRotation");
+    G4double stlFilterScale = cmdParam->getPriorityParamAsG4Double("stlFilterScale", "0.0");
+    NPLibrary::NPCad2Geant::NPSTL2Solid* stlMaker = new NPLibrary::NPCad2Geant::NPSTL2Solid();
+    stlMaker->readBinaryStlFile(stlFilterPath);
+
+    G4VSolid* resSolid = stlMaker->getSolid();
+    G4cout << "cadSolidVolume, mm3: " << resSolid->GetCubicVolume() / mm3 << G4endl;
+
+    G4LogicalVolume* resSolidLV = new G4LogicalVolume(resSolid, stlObjectMaterial, "resSolidLV");
+
+    G4cout << "cadSolidMaterial: " << stlObjectMaterial->GetName() << "; cadSolidMass, g: " << resSolidLV->GetMass() / g << G4endl;
+
+    new G4PVPlacement(stlFilterRotation, stlFilterPosition, resSolidLV, "resSolidPV", worldBoxLV, false, 0, true);
   }
 
   G4Region* regEpi = new G4Region("regEpi");

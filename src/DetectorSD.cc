@@ -54,7 +54,7 @@ G4bool DetectorSD::ProcessHits(G4Step* aStep, G4TouchableHistory* aHist)
   G4double de = aStep->GetTotalEnergyDeposit();
   G4double dx = aStep->GetStepLength();
 
-  if (de > 0.0 && dx > 1 * nm && de < 15.0 * MeV) {
+  if (de > 0.0 && dx > 1 * nm /* && de < 15.0 * MeV*/) {
     eneSum += de;
     letBase1 += de * de / dx;
     dxSum += dx;

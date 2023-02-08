@@ -34,7 +34,7 @@ add_library(NPLibrary SHARED
 
 target_compile_features(NPLibrary PRIVATE cxx_std_17)
 #target_link_libraries(NPLibrary PUBLIC ${Geant4_LIBRARIES} $<$<BOOL:${Protobuf_FOUND}>:proto>)
-target_link_libraries(NPLibrary PUBLIC ${Geant4_LIBRARIES} proto)
+target_link_libraries(NPLibrary PUBLIC ${Geant4_LIBRARIES} proto ${Protobuf_LIBRARIES})
 target_include_directories(NPLibrary PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 if (WIN32) 
   target_compile_definitions(NPLibrary PUBLIC NPLIBRARY_BUILD_DLL)

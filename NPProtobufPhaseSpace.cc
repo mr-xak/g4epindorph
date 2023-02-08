@@ -16,6 +16,7 @@
 #endif
 
 #include "NPParamReader.hh"
+#include "NPPhaseSpaceData.pb.h"
 
 PGAProtobuf::PGAProtobuf()
   : G4VUserPrimaryGeneratorAction(),
@@ -25,13 +26,15 @@ PGAProtobuf::PGAProtobuf()
 
   NPLibrary::NPParamReaderMain* cmdParam = NPLibrary::NPParamReaderMain::Instance();
 
-  G4String inpFName = cmdParam->getPriorityParamAsG4String("inputPhaseSpaceProtobufPath", "test.pbphsp");
+  G4String inpFName = cmdParam->getPriorityParamAsG4String("inputProtobufPhaseSpacePath", "test.pbphsp");
   {
     std::ifstream fnStream(inpFName.c_str(), std::ios::in | std::ios::binary);
     phaseSpaceMap.ParseFromIstream(&fnStream);
     //std::cout << phaseSpaceMap.ShortDebugString() << std::endl;
     fnStream.close();
   }
+
+  G4cout << "Read " << phaseSpaceMap.phasespacemap_size() << " particles from " << inpFName << " . " << G4endl;
 
   translationVector = cmdParam->getPriorityParamAsG4ThreeVector("phaseSpaceTranslation");
 
