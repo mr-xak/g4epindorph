@@ -52,6 +52,7 @@
 
 // NPLibrary
 #include "NPParamReader.hh"
+#include "NPFastLayersData.hh"
 
 // App
 #include "DetectorMaterials.hh"
@@ -140,7 +141,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 void DetectorConstruction::ConstructSDandField()
 {
-
+  NPLibrary::NPFastLayerData::NPFastVoxelMain* vxFastData = NPLibrary::NPFastLayerData::NPFastVoxelMain::Instance();
+  vxFastData->setVoxelData(1, 1, 64, 1.0);
   G4cout << "ConstructSDandField called" << G4endl;
 
   G4SDManager* sdMan = G4SDManager::GetSDMpointer();

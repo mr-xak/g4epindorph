@@ -90,10 +90,31 @@ int main(int argc, char** argv) {
       phys->ReplacePhysics(new G4EmStandardPhysics_option4());
       physicsList = phys;
     }
+    else if (standartPhysNum == 606) {
+      G4PhysListFactory factory;
+      G4VModularPhysicsList* phys = nullptr;
+      phys = factory.GetReferencePhysList("QGSP_INCLXX");
+      phys->ReplacePhysics(new G4EmLivermorePhysics());
+      physicsList = phys;
+    }
     else if (standartPhysNum == 2) {
       G4PhysListFactory factory;
       G4VModularPhysicsList* phys = nullptr;
       phys = factory.GetReferencePhysList("QBBC");
+      physicsList = phys;
+    }
+    else if (standartPhysNum == 204) {
+      G4PhysListFactory factory;
+      G4VModularPhysicsList* phys = nullptr;
+      phys = factory.GetReferencePhysList("QBBC");
+      phys->ReplacePhysics(new G4EmStandardPhysics_option4());
+      physicsList = phys;
+    }
+    else if (standartPhysNum == 206) {
+      G4PhysListFactory factory;
+      G4VModularPhysicsList* phys = nullptr;
+      phys = factory.GetReferencePhysList("QBBC");
+      phys->ReplacePhysics(new G4EmLivermorePhysics());
       physicsList = phys;
     }
     else if (standartPhysNum == 911) {
@@ -101,6 +122,13 @@ int main(int argc, char** argv) {
       G4VModularPhysicsList* phys = nullptr;
       phys = factory.GetReferencePhysList("QGSP_BIC_AllHP");
       //phys->ReplacePhysics(new G4EmStandardPhysics_option4());
+      physicsList = phys;
+    }
+    else if (standartPhysNum == 9113) {
+      G4PhysListFactory factory;
+      G4VModularPhysicsList* phys = nullptr;
+      phys = factory.GetReferencePhysList("QGSP_BIC_AllHP");
+      phys->ReplacePhysics(new G4EmStandardPhysics_option3());
       physicsList = phys;
     }
     else if (standartPhysNum == 9114) {

@@ -19,9 +19,11 @@ add_library(NPLibraryMinimal SHARED
   NPParamReader.cc NPParamReader.hh
   NPFastLayersData.cc NPFastLayersData.hh
 )
+message(${Boost_INCLUDE_DIR})
 if (WIN32) 
   target_compile_definitions(NPLibraryMinimal PUBLIC NPLIBRARY_BUILD_DLL)
 endif()
+target_include_directories(NPLibraryMinimal PRIVATE ${Boost_INCLUDE_DIR})
 target_compile_features(NPLibraryMinimal PRIVATE cxx_std_17)
 target_link_libraries(NPLibraryMinimal PUBLIC  ${Geant4_LIBRARIES} )
 

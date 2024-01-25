@@ -47,7 +47,9 @@ public:
 
   void addParticle2PhaseSpace(int pid, G4double ene, G4double x, G4double y, G4double z, G4double ux, G4double uy, G4double uz);
 
-  void addLETFulLData(G4double, G4double, G4double, G4double, G4double, G4int);
+  void addLETFulLData(G4double, G4double, G4double, G4double, G4double, G4double, G4int);
+
+  double calculateAbsErrorOfTwoVals(G4double a, G4double absErrA, G4double b, G4double absErrB);
 
   void addDoseMap(tgD&);
   void addLetMap(tgD&);
@@ -64,6 +66,7 @@ private:
   G4double letBase2;
   G4double let2Avg;
   G4double dxSum;
+  G4double dxLetSum;
   G4int qu;
 };
 

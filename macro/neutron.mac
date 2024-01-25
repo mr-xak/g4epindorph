@@ -1,0 +1,25 @@
+/control/verbose 2
+/run/verbose 2
+/event/verbose 0
+/tracking/verbose 0
+
+/run/printProgress 1000000
+
+/gps/source/clear
+
+/gps/source/add 1.00
+/gps/particle neutron
+/gps/energy 14.8 MeV
+/gps/ene/type Gauss
+/gps/ene/mono 14.8 MeV
+/gps/ene/ezero 14.8 MeV
+/gps/ene/sigma 0.15 MeV
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/centre 0. 34. -60. mm
+/gps/pos/radius 1.44 cm
+/gps/ang/type iso
+
+/gps/source/list
+
+/run/beamOn 100000000
