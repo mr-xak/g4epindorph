@@ -15,15 +15,18 @@ file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/*.cpp
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/*.h)
 
 
-add_library(NPParamReader SHARED NPParamReader.cc NPParamReader.hh)
+add_library(NPLibraryMinimal SHARED 
+  NPParamReader.cc NPParamReader.hh
+  NPFastLayersData.cc NPFastLayersData.hh
+)
 if (WIN32) 
-  target_compile_definitions(NPParamReader PUBLIC NPLIBRARY_BUILD_DLL)
+  target_compile_definitions(NPLibraryMinimal PUBLIC NPLIBRARY_BUILD_DLL)
 endif()
-target_compile_features(NPParamReader PRIVATE cxx_std_17)
-target_link_libraries(NPParamReader PUBLIC  ${Geant4_LIBRARIES} )
+target_compile_features(NPLibraryMinimal PRIVATE cxx_std_17)
+target_link_libraries(NPLibraryMinimal PUBLIC  ${Geant4_LIBRARIES} )
 
 add_executable(g4epindorph neutronEpi.cc  ${sources} ${headers})
 target_link_libraries(g4epindorph PUBLIC
  ${Geant4_LIBRARIES} 
- NPParamReader
+ NPLibraryMinimal
 )
